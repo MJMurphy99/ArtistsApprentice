@@ -14,6 +14,7 @@ public class CheckRange : MonoBehaviour
     private Color occupied, empty;
     private GameObject enemy;
     private int scroll = 0, delta = 0;
+    private List<GameObject> targets;
 
     private void Start()
     {
@@ -38,18 +39,20 @@ public class CheckRange : MonoBehaviour
     {
         if (!col.transform.CompareTag("Untargetable"))
         {
-            sr.color = occupied;
+            if(sr.color == empty) sr.color = occupied;
+            //targets.Add(col.gameObject);
             enemy = col.gameObject;
         }
     }
 
     private void OnTriggerExit(Collider col)
     {
-        //TODO: make it check if empty rather than if something exited
+        //TODO: make damage occur at "EndTurn" instead of when "left mouse button is clicked"
         if (!col.transform.CompareTag("Untargetable"))
         {
-            sr.color = empty;
             enemy = null;
+            //targets.Remove(col.gameObject);
+            if (targets.Count == 0) sr.color = empty;
         };
     }
 
