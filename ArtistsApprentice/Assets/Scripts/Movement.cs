@@ -1,16 +1,25 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
 using UnityEngine;
 
 public class Movement : MonoBehaviour
 {
+    public GameObject[] visualIndicators;
+    public bool isFocused = false;
+    public StatusEffect[] moveList;
+    public GameObject body;
+    public StatusEffect currentMove;
+    public Image img;
+
     public GameObject mainBody;
     public float speed, radius;
     public CheckRange cr;
 
-    private static Vector3 movePoint, originPoint;
+    private Vector3 movePoint, originPoint;
     private RecoveryTimer timer;
     private AimAttack aa;
+    private int scroll = 0, delta = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -18,12 +27,22 @@ public class Movement : MonoBehaviour
         aa = GetComponent<AimAttack>();
         timer = GetComponent<RecoveryTimer>();
         originPoint = transform.position;
+
+        currentMove = moveList[0];
+        img.sprite = currentMove.effectIcon;
     }
 
     // Update is called once per frame
     void Update()
     {
-        Move();
+        if(isFocused)
+        {
+            Move();
+
+            delta = (int)Input.mouseScrollDelta.y;
+            if (delta != 0)
+                ChangeMove();
+        }
     }
 
     private void Move()
@@ -45,6 +64,26 @@ public class Movement : MonoBehaviour
         }
     }
 
+    public void Fire(List<GameObject> targets)
+    {
+        foreach (GameObject enemy in targets)
+        {
+            print(enemy.name);
+            currentMove.User = body;
+            currentMove.Host = enemy;
+            currentMove.Effect();
+        }
+    }
+
+    private void ChangeMove()
+    {
+        scroll = (scroll + delta) % moveList.Length;
+        if (scroll < 0) scroll = moveList.Length - 1;
+
+        currentMove = moveList[scroll];
+        img.sprite = currentMove.effectIcon;
+    }
+
     public void EndTurn()
     {
         mainBody.transform.position = transform.position;
@@ -52,10 +91,29 @@ public class Movement : MonoBehaviour
         int cost;
 
         if (aa.targetLocked)
-            cost = cr.currentMove.cost;
+            cost = currentMove.cost;
         else cost = 0;
 
         timer.AddUpRecoveryTime(originPoint, movePoint, cost);
         originPoint = movePoint;
+
+        Fire(cr.targets);
+    }
+
+    public void SetFocused()
+    {
+        isFocused = !isFocused;
+
+        foreach(GameObject g in visualIndicators)
+        {
+            if(g.name.CompareTo("InnerThreshold") == 0)
+                g.SetActive(isFocused);
+            else
+            {
+                SpriteRenderer sr = g.GetComponent<SpriteRenderer>();
+                sr.enabled = isFocused;
+            }
+        }
+            
     }
 }

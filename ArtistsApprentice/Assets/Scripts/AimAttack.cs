@@ -7,11 +7,14 @@ public class AimAttack : MonoBehaviour
     public Transform pivot, body ;
     public bool targetLocked = false;
 
+    private Movement m;
     private float xRadius, yRadius;   
 
     // Start is called before the first frame update
     void Start()
     {
+        m = GetComponent<Movement>();
+
         xRadius = Screen.width / 2;
         yRadius = Screen.height / 2;
     }
@@ -19,16 +22,19 @@ public class AimAttack : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Select();
+        if(m.isFocused)
+        {
+            Select();
 
-        if(!targetLocked)
-            MouseScreenAngle();
+            if (!targetLocked)
+                MouseScreenAngle();
+        }
     }
 
     private void MouseScreenAngle()
     {
         Vector2 rawMousePos = Input.mousePosition;
-
+        
         Vector3 screenPos = Camera.main.WorldToScreenPoint(body.position);
         xRadius += screenPos.x - xRadius;
         yRadius += screenPos.y - yRadius;

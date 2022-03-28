@@ -7,27 +7,13 @@ public class RecoveryTimer : MonoBehaviour
 {
     public float movementRadius;
     public TextMeshProUGUI display;
-    public GameObject moveRangeHUD;
+    public GameObject moveRangeHUD, attackRadius;
     public int recoveryTime = 0, movementCost;
     public bool playerCharacter = false;
 
-    private MovementRangeHUD mrHUD;
     private Movement movement;
     private bool recovering = false;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        //movement = GetComponent<Movement>();
-        if(playerCharacter)
-            mrHUD = moveRangeHUD.GetComponent<MovementRangeHUD>();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 
     public void AddUpRecoveryTime(Vector3 originPoint, Vector3 movePoint, int attackCost)
     {
@@ -46,8 +32,7 @@ public class RecoveryTimer : MonoBehaviour
         display.text = "Recovery Time: " + recoveryTime;
         if (playerCharacter)
         {
-            
-            display.gameObject.SetActive(true);
+            attackRadius.SetActive(false);
             moveRangeHUD.SetActive(false);
         }
 
@@ -60,11 +45,11 @@ public class RecoveryTimer : MonoBehaviour
         }
         
         recovering = false;
-        display.gameObject.SetActive(false);
+        display.gameObject.SetActive(false);  
         if(playerCharacter)
         {
-            mrHUD.ResetPosition();
+            attackRadius.SetActive(true);
             moveRangeHUD.SetActive(true);
-        }        
+        }
     }
 }
