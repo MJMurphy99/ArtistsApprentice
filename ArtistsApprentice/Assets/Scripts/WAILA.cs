@@ -8,11 +8,13 @@ public class WAILA : MonoBehaviour
     public Vector3 cameraAnchor;
     private Party p;
     private GameObject highlight;
+    private Vector3 lastPos;
 
     // Start is called before the first frame update
     void Start()
     {
         p = GetComponent<Party>();
+        lastPos = p.focusedPartyMember.transform.position;
     }
 
     // Update is called once per frame
@@ -33,7 +35,7 @@ public class WAILA : MonoBehaviour
                 highlight = null;
             }
             else
-            {
+            { 
                 GameObject g = hit.transform.GetChild(1).gameObject;
                 SpriteRenderer sr = g.GetComponent<SpriteRenderer>();
 
@@ -52,6 +54,16 @@ public class WAILA : MonoBehaviour
                 sr.enabled = false;
                 highlight = null;
             }
+        }
+
+        if (p.focusedPartyMember != null)
+        {
+            if(Vector3.Distance(gameObject.transform.position, lastPos) > 3)
+            {
+                Camera.main.transform.position = p.focusedPartyMember.transform.position + cameraAnchor;
+            }
+
+            lastPos = p.focusedPartyMember.transform.position;
         }
     }
 }

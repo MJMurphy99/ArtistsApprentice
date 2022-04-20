@@ -5,19 +5,37 @@ using UnityEngine.UI;
 
 public class Health : MonoBehaviour
 {
-    public Image img;
+    //Entity Attributes
+    [Header("[Relevant]")]
     public int totalHealth;
-
     private float currentHealth;
+
+    //Miscellaneous Variables
+    [Header("[Extra]")]
+    public Image img;
+    private Combat_EntityManager cem;
 
     private void Start()
     {
         currentHealth = totalHealth;
+        cem = FindObjectOfType<Combat_EntityManager>();
     }
 
-    public void ChangeHealth(int amount)
+    public bool ChangeHealth(int amount)
     {
         currentHealth -= amount;
         img.fillAmount = currentHealth / totalHealth;
+        bool d = DeathState();
+        return d;
+    }
+
+    private bool DeathState()
+    {
+        if (currentHealth <= 0)
+        {
+            cem.UpdatePartyCount(gameObject, 0);
+            return true;
+        }
+        return false;
     }
 }

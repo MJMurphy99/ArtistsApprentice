@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class CheckRange : MonoBehaviour
 {
+    public GameObject user;
     private SpriteRenderer sr;
     private Color occupied, empty;
     public List<GameObject> targets = new List<GameObject>();
@@ -13,15 +14,16 @@ public class CheckRange : MonoBehaviour
         sr = GetComponent<SpriteRenderer>();
         occupied = new Color(0, 1, 0, .6f);
         empty = new Color(1, 0, 0, .6f);
-        sr.color = empty;
+        if (user.CompareTag("Player")) sr.color = empty;
     }
 
     private void OnTriggerEnter(Collider col)
     {
         if (!col.transform.CompareTag("Untargetable"))
         {
-            if(sr.color == empty) sr.color = occupied;
-            targets.Add(col.gameObject);
+            if(sr.color == empty && user.CompareTag("Player")) sr.color = occupied;
+            if(targets.Find((GameObject g) => { return g == col.gameObject; }) == null)
+                targets.Add(col.gameObject);
         }
     }
 
@@ -30,7 +32,12 @@ public class CheckRange : MonoBehaviour
         if (!col.transform.CompareTag("Untargetable"))
         {
             targets.Remove(col.gameObject);
-            if (targets.Count == 0) sr.color = empty;
+            if (targets.Count == 0 && user.CompareTag("Player")) sr.color = empty;
         };
+    }
+
+    public void Clear()
+    {
+        targets = new List<GameObject>();
     }
 }

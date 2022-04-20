@@ -45,4 +45,9 @@ public abstract class StatusEffect : ScriptableObject
     //    Image i = t.GetChild(t.childCount - (2 - activationPeriod)).GetComponent<Image>();
     //    i.sprite = active ? effectIcon : nullIcon;
     //}
+
+    public void PrintAllStats()
+    {
+        Debug.Log("Durration: " + duration + " Cost: " + cost + " Value: " + val);
+    }
 }

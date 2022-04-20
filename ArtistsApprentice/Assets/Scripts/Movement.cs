@@ -5,20 +5,29 @@ using UnityEngine;
 
 public class Movement : MonoBehaviour
 {
-    public GameObject[] visualIndicators;
-    public bool isFocused = false;
-    public StatusEffect[] moveList;
-    public GameObject body;
-    public StatusEffect currentMove;
-    public Image img;
-
-    public GameObject mainBody;
+    //Entity Attributes
+    [Header("[Relevant]")]
+    public int attackMod, recoveryMod;
     public float speed, radius;
-    public CheckRange cr;
 
-    private Vector3 movePoint, originPoint;
+    [Header("[Extra]")]
+    public StatusEffect[] moveList;
+    public StatusEffect currentMove;
+    public GameObject body;
+    public GameObject mainBody;
+
+    //Referenced Scripts
+    public CheckRange cr;
     private RecoveryTimer timer;
     private AimAttack aa;
+
+    //UI Management
+    public GameObject[] visualIndicators;
+    public Image img;
+    public bool isFocused = false;
+
+    //Miscellaneous Variables
+    private Vector3 movePoint, originPoint;
     private int scroll = 0, delta = 0;
 
     // Start is called before the first frame update
@@ -26,10 +35,13 @@ public class Movement : MonoBehaviour
     {
         aa = GetComponent<AimAttack>();
         timer = GetComponent<RecoveryTimer>();
-        originPoint = transform.position;
 
-        currentMove = moveList[0];
+        currentMove = Instantiate(moveList[0]);
+        currentMove.val += attackMod;
+        currentMove.cost += recoveryMod;
+
         img.sprite = currentMove.effectIcon;
+        originPoint = transform.position;
     }
 
     // Update is called once per frame
@@ -68,7 +80,6 @@ public class Movement : MonoBehaviour
     {
         foreach (GameObject enemy in targets)
         {
-            print(enemy.name);
             currentMove.User = body;
             currentMove.Host = enemy;
             currentMove.Effect();
@@ -86,18 +97,21 @@ public class Movement : MonoBehaviour
 
     public void EndTurn()
     {
-        mainBody.transform.position = transform.position;
-        transform.localPosition = Vector3.zero;
-        int cost;
+        if (timer.recoveryTime == 0)
+        {
+            mainBody.transform.position = transform.position;
+            transform.localPosition = Vector3.zero;
+            int cost;
 
-        if (aa.targetLocked)
-            cost = currentMove.cost;
-        else cost = 0;
+            if (aa.targetLocked)
+                cost = currentMove.cost;
+            else cost = 0;
 
-        timer.AddUpRecoveryTime(originPoint, movePoint, cost);
-        originPoint = movePoint;
+            timer.AddUpRecoveryTime(originPoint, movePoint, cost);
+            originPoint = movePoint;
 
-        Fire(cr.targets);
+            Fire(cr.targets);
+        }
     }
 
     public void SetFocused()
@@ -113,7 +127,6 @@ public class Movement : MonoBehaviour
                 SpriteRenderer sr = g.GetComponent<SpriteRenderer>();
                 sr.enabled = isFocused;
             }
-        }
-            
+        }    
     }
 }
