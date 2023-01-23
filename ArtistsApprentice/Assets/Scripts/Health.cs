@@ -8,11 +8,11 @@ public class Health : MonoBehaviour
     //Entity Attributes
     [Header("[Relevant]")]
     public int totalHealth;
-    private float currentHealth;
 
     //Miscellaneous Variables
     [Header("[Extra]")]
     public Image img;
+    private float currentHealth;
     private Combat_EntityManager cem;
 
     private void Start()
